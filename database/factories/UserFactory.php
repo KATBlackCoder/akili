@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -11,34 +12,42 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
+        $firstname = fake()->firstName();
+        $lastname = fake()->lastName();
+        $phone = fake()->numerify('06########');
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'company_id' => Company::factory(),
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'username' => Str::lower($lastname).'@'.$phone.'.org',
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'must_change_password' => false,
+            'phone' => $phone,
+            'department' => fake()->optional()->randomElement(['RH', 'Technique', 'Commercial', 'Finance']),
+            'job_title' => fake()->optional()->jobTitle(),
+            'is_active' => true,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    public function mustChangePassword(): static
     {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'must_change_password' => true,
+        ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
         ]);
     }
 }
