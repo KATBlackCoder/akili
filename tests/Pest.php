@@ -13,6 +13,9 @@
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->beforeEach(fn () => \Illuminate\Support\Facades\Artisan::call('db:seed', [
+        '--class' => \Database\Seeders\RolesAndPermissionsSeeder::class,
+    ]))
     ->in('Feature');
 
 /*

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ManagerPrivilege;
 use App\Models\User;
+use App\Models\UserPrivilege;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,7 +12,7 @@ class PrivilegeController extends Controller
 {
     public function edit(User $user): View
     {
-        $privilege = ManagerPrivilege::firstOrNew([
+        $privilege = UserPrivilege::firstOrNew([
             'company_id' => $user->company_id,
             'user_id' => $user->id,
         ]);
@@ -26,16 +26,18 @@ class PrivilegeController extends Controller
 
         $validated = $request->validate([
             'can_create_forms' => ['boolean'],
-            'can_create_users' => ['boolean'],
+            'can_create_superviseurs' => ['boolean'],
+            'can_create_employes' => ['boolean'],
             'can_delegate' => ['boolean'],
         ]);
 
-        ManagerPrivilege::updateOrCreate(
+        UserPrivilege::updateOrCreate(
             ['company_id' => $user->company_id, 'user_id' => $user->id],
             [
                 'granted_by' => auth()->id(),
                 'can_create_forms' => $validated['can_create_forms'] ?? false,
-                'can_create_users' => $validated['can_create_users'] ?? false,
+                'can_create_superviseurs' => $validated['can_create_superviseurs'] ?? false,
+                'can_create_employes' => $validated['can_create_employes'] ?? false,
                 'can_delegate' => $validated['can_delegate'] ?? false,
             ]
         );
@@ -50,7 +52,7 @@ class PrivilegeController extends Controller
         abort_if(! $grantor->canDelegate(), 403);
 
         $grantorPrivilege = $grantor->privilege;
-        $targetPrivilege = ManagerPrivilege::firstOrNew([
+        $targetPrivilege = UserPrivilege::firstOrNew([
             'company_id' => $user->company_id,
             'user_id' => $user->id,
         ]);
@@ -64,21 +66,41 @@ class PrivilegeController extends Controller
         abort_if(! $grantor->canDelegate(), 403);
 
         $grantorPrivilege = $grantor->privilege;
-
-        $validated = $request->validate([
-            'can_create_forms' => ['boolean'],
-            'can_create_users' => ['boolean'],
-            'can_delegate' => ['boolean'],
+        $targetPrivilege = UserPrivilege::firstOrNew([
+            'company_id' => $user->company_id,
+            'user_id' => $user->id,
         ]);
 
-        // A manager can only grant privileges they possess themselves
-        $allowed = [
-            'can_create_forms' => ($validated['can_create_forms'] ?? false) && ($grantorPrivilege?->can_create_forms ?? false),
-            'can_create_users' => ($validated['can_create_users'] ?? false) && ($grantorPrivilege?->can_create_users ?? false),
-            'can_delegate' => ($validated['can_delegate'] ?? false) && ($grantorPrivilege?->can_delegate ?? false),
-        ];
+        $isSuperAdmin = $grantor->hasRole('super-admin');
+        $isManager = $grantor->hasRole('manager');
 
-        ManagerPrivilege::updateOrCreate(
+        $validated = $request->validate([
+            'can_create_employes' => ['boolean'],
+        ]);
+
+        if ($isSuperAdmin) {
+            $fullValidated = $request->validate([
+                'can_create_forms' => ['boolean'],
+                'can_create_superviseurs' => ['boolean'],
+                'can_create_employes' => ['boolean'],
+                'can_delegate' => ['boolean'],
+            ]);
+            $allowed = [
+                'can_create_forms' => $fullValidated['can_create_forms'] ?? false,
+                'can_create_superviseurs' => $fullValidated['can_create_superviseurs'] ?? false,
+                'can_create_employes' => $fullValidated['can_create_employes'] ?? false,
+                'can_delegate' => $fullValidated['can_delegate'] ?? false,
+            ];
+        } elseif ($isManager) {
+            abort_unless($user->role === 'superviseur' && $user->manager_id === $grantor->id, 403);
+            $allowed = [
+                'can_create_employes' => ($validated['can_create_employes'] ?? false) && ($grantorPrivilege?->can_create_employes ?? false),
+            ];
+        } else {
+            abort(403);
+        }
+
+        UserPrivilege::updateOrCreate(
             ['company_id' => $user->company_id, 'user_id' => $user->id],
             [...$allowed, 'granted_by' => $grantor->id]
         );

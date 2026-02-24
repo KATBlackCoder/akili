@@ -21,7 +21,7 @@ class AttendanceController extends Controller
                 ->get()
             : collect([$user]);
 
-        $employeeId = $request->input('employee_id', $user->hasRole('employee') ? $user->id : null);
+        $employeeId = $request->input('employee_id', $user->hasRole('employe') ? $user->id : null);
 
         $attendances = Attendance::where('company_id', $user->company_id)
             ->when($employeeId, fn ($q) => $q->where('user_id', $employeeId))

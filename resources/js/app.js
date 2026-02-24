@@ -1,4 +1,5 @@
 import './bootstrap';
+import './reports';
 
 import Alpine from 'alpinejs';
 import htmx from 'htmx.org';

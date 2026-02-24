@@ -21,7 +21,7 @@ class LeaveController extends Controller
                 fn ($q) => $q->whereIn('user_id', $user->subordinates()->pluck('id'))
             )
             ->when(
-                $user->hasRole('employee'),
+                $user->hasRole('employe'),
                 fn ($q) => $q->where('user_id', $user->id)
             )
             ->latest()

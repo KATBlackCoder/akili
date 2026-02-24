@@ -25,9 +25,9 @@ class User extends Authenticatable
         'username',
         'password',
         'must_change_password',
+        'role',
         'manager_id',
-        'department',
-        'job_title',
+        'supervisor_id',
         'phone',
         'avatar_path',
         'hired_at',
@@ -62,19 +62,35 @@ class User extends Authenticatable
         return $this->belongsTo(Company::class);
     }
 
+    /** Superviseur → son Manager */
     public function manager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'manager_id');
     }
 
-    public function subordinates(): HasMany
+    /** Employé → son Superviseur */
+    public function supervisor(): BelongsTo
     {
-        return $this->hasMany(User::class, 'manager_id');
+        return $this->belongsTo(User::class, 'supervisor_id');
+    }
+
+    /** Manager → ses Superviseurs directs */
+    public function superviseurs(): HasMany
+    {
+        return $this->hasMany(User::class, 'manager_id')
+            ->where('role', 'superviseur');
+    }
+
+    /** Superviseur → ses Employés directs */
+    public function employes(): HasMany
+    {
+        return $this->hasMany(User::class, 'supervisor_id')
+            ->where('role', 'employe');
     }
 
     public function privilege(): HasOne
     {
-        return $this->hasOne(ManagerPrivilege::class);
+        return $this->hasOne(UserPrivilege::class);
     }
 
     public function assignments(): HasMany
@@ -116,13 +132,22 @@ class User extends Authenticatable
         return $this->privilege?->can_create_forms ?? false;
     }
 
-    public function canCreateUsers(): bool
+    public function canCreateSuperviseurs(): bool
     {
         if ($this->hasRole('super-admin')) {
             return true;
         }
 
-        return $this->privilege?->can_create_users ?? false;
+        return $this->privilege?->can_create_superviseurs ?? false;
+    }
+
+    public function canCreateEmployes(): bool
+    {
+        if ($this->hasRole('super-admin')) {
+            return true;
+        }
+
+        return $this->privilege?->can_create_employes ?? false;
     }
 
     public function canDelegate(): bool

@@ -13,6 +13,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         Role::findOrCreate('super-admin', 'web');
         Role::findOrCreate('manager', 'web');
-        Role::findOrCreate('employee', 'web');
+        Role::findOrCreate('superviseur', 'web');
+        Role::findOrCreate('employe', 'web');
     }
 }

@@ -8,13 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('manager_privileges', function (Blueprint $table) {
+        Schema::create('user_privileges', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('granted_by')->constrained('users')->cascadeOnDelete();
             $table->boolean('can_create_forms')->default(false);
-            $table->boolean('can_create_users')->default(false);
+            $table->boolean('can_create_superviseurs')->default(false);
+            $table->boolean('can_create_employes')->default(false);
             $table->boolean('can_delegate')->default(false);
             $table->timestamps();
 
@@ -24,6 +25,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('manager_privileges');
+        Schema::dropIfExists('user_privileges');
     }
 };

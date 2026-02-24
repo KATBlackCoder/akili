@@ -23,13 +23,16 @@ return new class extends Migration
 
         Schema::create('submissions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('assignment_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('form_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('assignment_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('submitted_by')->constrained('users')->cascadeOnDelete();
-            $table->enum('status', ['submitted', 'returned', 'corrected'])->default('submitted');
-            $table->timestamp('submitted_at');
+            $table->enum('report_type', ['type1', 'type2']);
+            $table->enum('status', ['draft', 'submitted', 'returned', 'corrected'])->default('draft');
+            $table->timestamp('submitted_at')->nullable();
             $table->timestamps();
 
-            $table->index('assignment_id');
+            $table->index(['company_id', 'form_id', 'status']);
         });
 
         Schema::create('answers', function (Blueprint $table) {

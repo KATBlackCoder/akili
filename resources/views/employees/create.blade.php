@@ -39,27 +39,49 @@
                         @error('phone')<label class="label"><span class="label-text-alt text-error">{{ $message }}</span></label>@enderror
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-medium">Département</span></label>
-                            <input type="text" name="department" value="{{ old('department') }}" class="input input-bordered" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-medium">Poste</span></label>
-                            <input type="text" name="job_title" value="{{ old('job_title') }}" class="input input-bordered" />
-                        </div>
-                    </div>
-
+                    @if(auth()->user()->hasRole('manager'))
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-medium">Manager direct</span></label>
-                        <select name="manager_id" class="select select-bordered w-full">
-                            <option value="">Aucun</option>
-                            @foreach($managers as $manager)
-                            <option value="{{ $manager->id }}" {{ old('manager_id') == $manager->id ? 'selected' : '' }}>
-                                {{ $manager->full_name }}
-                            </option>
-                            @endforeach
+                        <label class="label"><span class="label-text font-medium">Rôle *</span></label>
+                        <select name="role" class="select select-bordered w-full" required
+                                hx-get="{{ route('employees.create') }}"
+                                hx-trigger="change"
+                                hx-target="#role-dependant-fields"
+                                hx-include="this"
+                                hx-swap="innerHTML">
+                            <option value="superviseur" {{ old('role') == 'superviseur' ? 'selected' : '' }}>Superviseur</option>
+                            <option value="employe" {{ old('role', 'employe') == 'employe' ? 'selected' : '' }}>Employé</option>
                         </select>
+                    </div>
+                    @endif
+
+                    <div id="role-dependant-fields">
+                        @if(count($superviseurs ?? []) > 0)
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-medium">Superviseur *</span></label>
+                            <select name="supervisor_id" class="select select-bordered w-full">
+                                <option value="">Sélectionner un superviseur</option>
+                                @foreach($superviseurs ?? [] as $superviseur)
+                                <option value="{{ $superviseur->id }}" {{ old('supervisor_id') == $superviseur->id ? 'selected' : '' }}>
+                                    {{ $superviseur->full_name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
+                        @if(count($groups ?? []) > 0)
+                        <div class="form-control mt-4">
+                            <label class="label"><span class="label-text font-medium">Groupe *</span></label>
+                            <select name="group_id" class="select select-bordered w-full">
+                                <option value="">Sélectionner un groupe</option>
+                                @foreach($groups ?? [] as $group)
+                                <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>
+                                    {{ $group->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
                     </div>
 
                     <div class="form-control">

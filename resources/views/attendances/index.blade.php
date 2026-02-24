@@ -11,7 +11,7 @@
                     hx-target="#attendance-grid"
                     hx-include="[name='employee_id']"
                     name="month" />
-                @if(!auth()->user()->hasRole('employee'))
+                @if(!auth()->user()->hasRole('employe'))
                 <select name="employee_id" class="select select-bordered select-sm"
                     hx-get="{{ route('attendances.index') }}"
                     hx-trigger="change"
@@ -39,7 +39,7 @@
             <form method="POST" action="{{ route('attendances.store') }}" class="space-y-4">
                 @csrf
                 <input type="hidden" name="date" x-bind:value="date" />
-                @if(!auth()->user()->hasRole('employee'))
+                @if(!auth()->user()->hasRole('employe'))
                 <div class="form-control">
                     <label class="label"><span class="label-text font-medium">Employé *</span></label>
                     <select name="user_id" class="select select-bordered w-full" required>

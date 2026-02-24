@@ -7,7 +7,7 @@
                 <h1 class="text-2xl font-bold">Assignations</h1>
                 <p class="text-base-content/60">{{ $assignments->total() }} assignation(s)</p>
             </div>
-            @if(!auth()->user()->hasRole('employee') && $forms->count() > 0)
+            @if(!auth()->user()->hasRole('employe') && $forms->count() > 0)
             <button class="btn btn-primary" onclick="document.getElementById('assign-modal').showModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
                 Assigner
@@ -20,7 +20,7 @@
                 <thead>
                     <tr class="text-xs uppercase text-base-content/40">
                         <th>Formulaire</th>
-                        @if(!auth()->user()->hasRole('employee'))<th class="hidden sm:table-cell">Employé</th>@endif
+                        @if(!auth()->user()->hasRole('employe'))<th class="hidden sm:table-cell">Employé</th>@endif
                         <th class="hidden sm:table-cell">Échéance</th>
                         <th>Statut</th>
                         <th>Actions</th>
@@ -31,7 +31,7 @@
                     <tr class="hover">
                         <td>
                             <div class="font-medium text-sm">{{ $assignment->form->title }}</div>
-                            @if(!auth()->user()->hasRole('employee'))
+                            @if(!auth()->user()->hasRole('employe'))
                             <div class="text-xs text-base-content/40 sm:hidden">{{ $assignment->employee->full_name }}</div>
                             @endif
                             @if($assignment->due_at)
@@ -40,7 +40,7 @@
                             </div>
                             @endif
                         </td>
-                        @if(!auth()->user()->hasRole('employee'))
+                        @if(!auth()->user()->hasRole('employe'))
                         <td class="hidden sm:table-cell text-sm">{{ $assignment->employee->full_name }}</td>
                         @endif
                         <td class="hidden sm:table-cell">
@@ -74,7 +74,7 @@
     </div>
 
     {{-- Modal assignation --}}
-    @if(!auth()->user()->hasRole('employee'))
+    @if(!auth()->user()->hasRole('employe'))
     <dialog id="assign-modal" class="modal">
         <div class="modal-box">
             <h3 class="font-bold text-lg mb-4">Assigner un questionnaire</h3>

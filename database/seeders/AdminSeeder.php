@@ -28,6 +28,7 @@ class AdminSeeder extends Seeder
                 'username' => 'admin@akili.local',
                 'password' => Hash::make('password'),
                 'must_change_password' => false,
+                'role' => 'super_admin',
                 'phone' => '0000000000',
                 'is_active' => true,
             ]

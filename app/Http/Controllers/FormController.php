@@ -14,16 +14,30 @@ class FormController extends Controller
 {
     public function index(Request $request): View
     {
+        $user = $request->user();
+
         $forms = Form::with('creator')
-            ->where('company_id', $request->user()->company_id)
+            ->where('company_id', $user->company_id)
             ->when(
-                $request->user()->hasRole('manager'),
-                fn ($q) => $q->where('created_by', $request->user()->id)
+                $user->hasRole('manager'),
+                fn ($q) => $q->where('created_by', $user->id)
             )
             ->latest()
             ->paginate(15);
 
-        return view('forms.index', compact('forms'));
+        $superviseurIds = \App\Models\User::where('manager_id', $user->id)->pluck('id');
+
+        $branchUsers = \App\Models\User::where('company_id', $user->company_id)
+            ->where('is_active', true)
+            ->where(function ($q) use ($user, $superviseurIds) {
+                $q->where('manager_id', $user->id)
+                    ->orWhereIn('supervisor_id', $superviseurIds);
+            })
+            ->orderBy('role')
+            ->orderBy('lastname')
+            ->get();
+
+        return view('forms.index', compact('forms', 'branchUsers'));
     }
 
     public function create(): View
@@ -36,6 +50,7 @@ class FormController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'report_type' => ['required', 'in:type1,type2'],
             'sections' => ['required', 'array', 'min:1'],
             'sections.*.title' => ['required', 'string', 'max:255'],
             'sections.*.fields' => ['required', 'array', 'min:1'],
@@ -48,6 +63,7 @@ class FormController extends Controller
             'created_by' => $request->user()->id,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
+            'report_type' => $validated['report_type'],
             'is_active' => true,
         ]);
 

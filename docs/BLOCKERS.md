@@ -111,6 +111,19 @@ document.addEventListener('htmx:configRequest', function(evt) {
 
 ---
 
+### RISQUE-006 — Deux systèmes d'assignation coexistants
+
+**Sévérité :** Basse  
+**Impacte :** Cohérence données, maintenance
+
+**Description :**
+Les tables `assignments` (ancien système 1-to-1) et `form_assignments` (nouveau scope role|individual) coexistent. Les contrôleurs de soumission hérités (`SubmissionController`) utilisent encore `assignments`.
+
+**Action requise en V3 :**
+Migrer `SubmissionController` vers `form_assignments`, supprimer `assignments`.
+
+---
+
 ## Résolu
 
 | Date | Description | Solution |

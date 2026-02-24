@@ -6,11 +6,15 @@ use App\Http\Controllers\CorrectionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\FormAssignmentController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PrivilegeController;
+use App\Http\Controllers\ReportType1Controller;
+use App\Http\Controllers\ReportType2Controller;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -58,6 +62,28 @@ Route::middleware('auth')->group(function () {
     Route::put('/managers/{user}/privileges', [PrivilegeController::class, 'update'])->name('managers.privileges.update');
     Route::get('/managers/{user}/delegate', [PrivilegeController::class, 'delegateForm'])->name('managers.delegate.form');
     Route::post('/managers/{user}/delegate', [PrivilegeController::class, 'delegate'])->name('managers.delegate');
+
+    // Création utilisateur dynamique
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+
+    // Rapports Type 1 (journalier)
+    Route::prefix('reports/type1/{form}')->name('reports.type1.')->group(function () {
+        Route::get('/', [ReportType1Controller::class, 'show'])->name('show');
+        Route::post('/rows', [ReportType1Controller::class, 'addRow'])->name('rows.add');
+        Route::delete('/rows/{row}', [ReportType1Controller::class, 'deleteRow'])->name('rows.delete');
+        Route::post('/draft', [ReportType1Controller::class, 'saveDraft'])->name('draft');
+        Route::post('/submit', [ReportType1Controller::class, 'submit'])->name('submit');
+    });
+
+    // Rapports Type 2 (urgent)
+    Route::prefix('reports/type2/{form}')->name('reports.type2.')->group(function () {
+        Route::get('/', [ReportType2Controller::class, 'show'])->name('show');
+        Route::post('/submit', [ReportType2Controller::class, 'submit'])->name('submit');
+    });
+
+    // Assignation globale / individuelle
+    Route::post('/forms/{form}/assign', [FormAssignmentController::class, 'store'])->name('forms.assign');
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

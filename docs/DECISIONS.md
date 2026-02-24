@@ -161,6 +161,40 @@ Pas de gestion de cache ou de job pour les exports. Si les exports deviennent le
 
 ---
 
+## ADR-011 — Hiérarchie explicite : colonne `role` sur users + Spatie
+
+**Date :** 23/02/2026  
+**Statut :** Accepté
+
+### Contexte
+La hiérarchie super_admin > manager > superviseur > employe nécessite des requêtes fréquentes du type "tous les employés d'un superviseur" qui seraient coûteuses via Spatie (jointures sur les tables de rôles).
+
+### Décision
+- Colonne `role` (enum) directement sur `users` pour les requêtes Eloquent efficaces
+- Spatie/Permission conservé pour les vérifications `hasRole()` dans les Policies
+- Les relations `superviseurs()`, `employes()` utilisent `where('role', ...)` pour éviter les N+1
+
+### Conséquence
+Duplication contrôlée : `role` sur users + Spatie. À la création, les deux sont assignés simultanément.
+
+---
+
+## ADR-012 — Deux systèmes d'assignation coexistants : `assignments` + `form_assignments`
+
+**Date :** 23/02/2026  
+**Statut :** Accepté (dette à traiter)
+
+### Contexte
+L'ancien système `assignments` (1-to-1 employé) coexiste avec le nouveau `form_assignments` (scope role|individual).
+
+### Décision
+Les deux tables coexistent en V2. `form_assignments` gère les rapports Type 1 & Type 2. L'ancien `assignments` reste pour la rétrocompatibilité.
+
+### Action requise en V3
+Migrer entièrement vers `form_assignments` et supprimer `assignments`.
+
+---
+
 ## ADR-009 — Tailwind v4 + DaisyUI v5 (migration depuis Breeze v3)
 
 **Date :** 23/02/2026  

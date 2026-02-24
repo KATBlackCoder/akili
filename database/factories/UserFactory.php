@@ -30,11 +30,38 @@ class UserFactory extends Factory
             'username' => Str::lower($lastname).'@'.$phone.'.org',
             'password' => static::$password ??= Hash::make('password'),
             'must_change_password' => false,
+            'role' => 'employe',
             'phone' => $phone,
-            'department' => fake()->optional()->randomElement(['RH', 'Technique', 'Commercial', 'Finance']),
-            'job_title' => fake()->optional()->jobTitle(),
             'is_active' => true,
         ];
+    }
+
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'super_admin',
+        ]);
+    }
+
+    public function manager(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'manager',
+        ]);
+    }
+
+    public function superviseur(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'superviseur',
+        ]);
+    }
+
+    public function employe(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'employe',
+        ]);
     }
 
     public function mustChangePassword(): static

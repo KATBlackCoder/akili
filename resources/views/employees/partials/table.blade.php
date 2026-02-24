@@ -2,8 +2,8 @@
     <thead>
         <tr class="text-xs uppercase text-base-content/40">
             <th>Employé</th>
-            <th class="hidden sm:table-cell">Département</th>
-            <th class="hidden sm:table-cell">Manager</th>
+            <th class="hidden sm:table-cell">Groupe</th>
+            <th class="hidden sm:table-cell">Superviseur / Manager</th>
             <th>Statut</th>
             <th>Actions</th>
         </tr>
@@ -19,15 +19,16 @@
                     <div class="min-w-0">
                         <div class="font-medium text-sm truncate">{{ $employee->full_name }}</div>
                         <div class="text-xs text-base-content/40 truncate">{{ $employee->username }}</div>
-                        {{-- Département visible uniquement mobile --}}
-                        @if($employee->department)
-                        <div class="text-xs text-base-content/50 sm:hidden mt-0.5">{{ $employee->department }}</div>
+                        @if($employee->group)
+                        <div class="text-xs text-base-content/50 sm:hidden mt-0.5">{{ $employee->group->name }}</div>
                         @endif
                     </div>
                 </div>
             </td>
-            <td class="hidden sm:table-cell text-sm text-base-content/70">{{ $employee->department ?? '—' }}</td>
-            <td class="hidden sm:table-cell text-sm text-base-content/70">{{ $employee->manager?->full_name ?? '—' }}</td>
+            <td class="hidden sm:table-cell text-sm text-base-content/70">{{ $employee->group?->name ?? '—' }}</td>
+            <td class="hidden sm:table-cell text-sm text-base-content/70">
+                {{ $employee->supervisor?->full_name ?? $employee->manager?->full_name ?? '—' }}
+            </td>
             <td>
                 <x-badge-status :status="$employee->is_active ? 'active' : 'inactive'" />
             </td>

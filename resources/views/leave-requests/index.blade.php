@@ -7,7 +7,7 @@
                 <h1 class="text-2xl font-bold">Congés</h1>
                 <p class="text-base-content/60">{{ $leaveRequests->total() }} demande(s)</p>
             </div>
-            @if(auth()->user()->hasRole('employee'))
+            @if(auth()->user()->hasRole('employe'))
             <button class="btn btn-primary" x-on:click="document.getElementById('leave-modal').showModal()">
                 Demander un congé
             </button>
@@ -19,7 +19,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            @if(!auth()->user()->hasRole('employee'))<th>Employé</th>@endif
+                            @if(!auth()->user()->hasRole('employe'))<th>Employé</th>@endif
                             <th>Type</th>
                             <th>Période</th>
                             <th>Durée</th>
@@ -30,7 +30,7 @@
                     <tbody>
                         @forelse($leaveRequests as $leave)
                         <tr>
-                            @if(!auth()->user()->hasRole('employee'))
+                            @if(!auth()->user()->hasRole('employe'))
                             <td>{{ $leave->employee->full_name }}</td>
                             @endif
                             <td>
@@ -42,7 +42,7 @@
                             <td>{{ $leave->duration_in_days }} j</td>
                             <td><x-badge-status :status="$leave->status" /></td>
                             <td>
-                                @if($leave->status === 'pending' && !auth()->user()->hasRole('employee'))
+                                @if($leave->status === 'pending' && !auth()->user()->hasRole('employe'))
                                 <div class="flex gap-1">
                                     <form method="POST" action="{{ route('leave-requests.approve', $leave) }}">
                                         @csrf @method('PATCH')
@@ -70,7 +70,7 @@
     </div>
 
     {{-- Modal demande de congé --}}
-    @if(auth()->user()->hasRole('employee'))
+    @if(auth()->user()->hasRole('employe'))
     <dialog id="leave-modal" class="modal">
         <div class="modal-box">
             <h3 class="font-bold text-lg mb-4">Demander un congé</h3>

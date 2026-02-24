@@ -34,7 +34,7 @@ class AssignmentController extends Controller
             ->get();
 
         $employees = $user->hasRole('super-admin')
-            ? User::where('company_id', $user->company_id)->role('employee')->get()
+            ? User::where('company_id', $user->company_id)->role('employe')->get()
             : $user->subordinates()->get();
 
         return view('assignments.index', compact('assignments', 'forms', 'employees'));

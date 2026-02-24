@@ -26,9 +26,8 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->boolean('must_change_password')->default(true);
+            $table->enum('role', ['super_admin', 'manager', 'superviseur', 'employe'])->default('employe');
             $table->foreignId('manager_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('department')->nullable();
-            $table->string('job_title')->nullable();
             $table->string('phone');
             $table->string('avatar_path')->nullable();
             $table->date('hired_at')->nullable();

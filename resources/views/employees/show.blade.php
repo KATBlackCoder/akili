@@ -25,12 +25,12 @@
                             <div>{{ $user->phone }}</div>
                         </div>
                         <div>
-                            <div class="text-xs text-base-content/50">Département</div>
-                            <div>{{ $user->department ?? '—' }}</div>
+                            <div class="text-xs text-base-content/50">Rôle</div>
+                            <div class="capitalize">{{ str_replace('_', ' ', $user->role ?? '—') }}</div>
                         </div>
                         <div>
-                            <div class="text-xs text-base-content/50">Poste</div>
-                            <div>{{ $user->job_title ?? '—' }}</div>
+                            <div class="text-xs text-base-content/50">Superviseur</div>
+                            <div>{{ $user->supervisor?->full_name ?? '—' }}</div>
                         </div>
                         <div>
                             <div class="text-xs text-base-content/50">Manager</div>

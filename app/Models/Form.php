@@ -17,6 +17,7 @@ class Form extends Model
         'created_by',
         'title',
         'description',
+        'report_type',
         'is_active',
     ];
 
@@ -44,11 +45,31 @@ class Form extends Model
 
     public function fields(): HasManyThrough
     {
-        return $this->hasManyThrough(FormField::class, FormSection::class);
+        return $this->hasManyThrough(
+            FormField::class,
+            FormSection::class,
+            'form_id',
+            'section_id'
+        );
     }
 
     public function assignments(): HasMany
     {
         return $this->hasMany(Assignment::class);
+    }
+
+    public function formAssignments(): HasMany
+    {
+        return $this->hasMany(FormAssignment::class);
+    }
+
+    public function isType1(): bool
+    {
+        return $this->report_type === 'type1';
+    }
+
+    public function isType2(): bool
+    {
+        return $this->report_type === 'type2';
     }
 }

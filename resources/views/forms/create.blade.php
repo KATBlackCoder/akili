@@ -58,6 +58,27 @@
                         <label class="label"><span class="label-text font-medium">Description / Instructions</span></label>
                         <textarea name="description" class="textarea textarea-bordered" rows="3" placeholder="Instructions pour les employés..."></textarea>
                     </div>
+                    <div class="form-control w-full mt-4">
+                        <label class="label"><span class="label-text font-semibold">Type de rapport *</span></label>
+                        <div class="flex gap-6">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="report_type" value="type1" class="radio radio-primary"
+                                       {{ old('report_type', 'type1') == 'type1' ? 'checked' : '' }} required />
+                                <div>
+                                    <div class="font-medium">Journalier (Type 1)</div>
+                                    <div class="text-xs text-base-content/50">Tableau multi-lignes, rempli au fil de la journée</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="report_type" value="type2" class="radio radio-error"
+                                       {{ old('report_type') == 'type2' ? 'checked' : '' }} />
+                                <div>
+                                    <div class="font-medium">Urgent (Type 2)</div>
+                                    <div class="text-xs text-base-content/50">Formulaire simple, notification immédiate</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
